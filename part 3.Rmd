@@ -1,0 +1,466 @@
+
+```{r}
+library(corrplot)
+library(ggplot2)
+library(dplyr)
+
+df <- read.csv("D:\\R-statistics\\titanic.csv")
+```
+
+## Simple Linear Correlation Coefficient
+
+```{r}
+# drop PassengerId col
+df_mod <- df %>% select(-PassengerId)
+df_mod$Embarked <- as.numeric(factor(df_mod$Embarked, levels = c("C", "Q", "S")))
+# convert gender col to int
+df_mod$Sex <- ifelse(df$Sex == "male", 1, 0)
+
+numeric_columns <- df_mod %>% select_if(is.numeric)
+
+# Calculate correlation matrix for all numerical columns including 'Survived'
+cor_matrix_with_survival <- cor(numeric_columns, use = "complete.obs")
+print(round(cor_matrix_with_survival, 2))
+
+
+corrplot(cor_matrix_with_survival, method = "circle", type = "lower", tl.col = "black", tl.srt = 45)
+```
+
+```         
+```
+
+### Interpretation
+
+-   The given figure shows nature and level of relationship b/w any 2 variables.
+
+#### **1. Survived and Other Variables:**
+
+-   **Survived and Pclass**: **-0.36** (Negative): Passengers in higher classes (Pclass 1) had a better chance of survival, while those in lower classes (Pclass 3) had a lower survival rate.
+
+-   **Survived and Sex**: **-0.54** (Strong negative): Females (coded as 0) had a significantly higher chance of survival compared to males (coded as 1).
+
+-   **Survived and Age**: **-0.08** (Very weak negative): Age had a minimal effect on survival, showing no significant relationship.
+
+-   **Survived and SibSp**: **-0.02** (Very weak negative): Number of siblings/spouses aboard had almost no effect on survival.
+
+-   **Survived and Parch**: **0.10** (Weak positive): Passengers with more parents/children aboard had a slightly higher chance of survival.
+
+-   **Survived and Fare**: **0.27** (Moderate positive): Passengers who paid higher fares had a slightly better chance of survival.
+
+-   **Survived and Embarked**: **-0.18** (Negative): Passengers who embarked from **S** (Southampton) had a slightly lower chance of survival compared to those who embarked from **C** (Cherbourg) or **Q** (Queenstown).
+
+#### **2. Pclass and Other Variables:**
+
+-   **Pclass and Sex**: **0.15** (Weak positive): Females were more likely to be in higher classes, while males were more likely to be in lower classes.
+
+-   **Pclass and Age**: **-0.37** (Negative): Older passengers were more likely to be in lower classes.
+
+-   **Pclass and SibSp**: **0.07** (Very weak positive): Very little relationship between the number of siblings/spouses aboard and the class.
+
+-   **Pclass and Parch**: **0.02** (Very weak positive): No significant relationship between the number of parents/children aboard and class.
+
+-   **Pclass and Fare**: **-0.55** (Strong negative): Passengers in higher classes (Pclass 1) paid significantly higher fares compared to passengers in lower classes.
+
+-   **Pclass and Embarked**: **0.24** (Positive): Passengers embarking from **C** (Cherbourg) or **Q** (Queenstown) were more likely to be in higher classes compared to those from **S** (Southampton).
+
+#### **3. Sex and Other Variables:**
+
+-   **Sex and Age**: **0.10** (Weak positive): A slight tendency for older passengers to be male.
+
+-   **Sex and SibSp**: **-0.11** (Weak negative): Males tended to have fewer siblings/spouses aboard than females.
+
+-   **Sex and Parch**: **-0.25** (Moderate negative): Males had fewer parents/children aboard compared to females.
+
+-   **Sex and Fare**: **-0.18** (Moderate negative): Males generally paid lower fares than females.
+
+-   **Sex and Embarked**: **0.11** (Positive): Females were slightly more likely to embark from **C** (Cherbourg) or **Q** (Queenstown) compared to **S** (Southampton).
+
+#### **4. Age and Other Variables:**
+
+-   **Age and SibSp**: **-0.31** (Negative): Younger passengers were more likely to travel with siblings/spouses.
+
+-   **Age and Parch**: **-0.19** (Weak negative): Younger passengers tended to have fewer parents/children aboard than older passengers.
+
+-   **Age and Fare**: **0.09** (Weak positive): Older passengers tend to pay slightly higher fares.
+
+-   **Age and Embarked**: **-0.03** (Very weak negative): No significant relationship between age and embarkation port.
+
+#### **5. SibSp and Other Variables:**
+
+-   **SibSp and Survived**: **-0.02** (Very weak negative): The number of siblings or spouses aboard had almost no effect on survival.
+
+-   **SibSp and Pclass**: **0.07** (Very weak positive): Passengers with more siblings or spouses tended to be slightly more likely to travel in higher classes, but the relationship is very weak.
+
+-   **SibSp and Sex**: **-0.11** (Weak negative): Males tended to have fewer siblings or spouses aboard compared to females.
+
+-   **SibSp and Age**: **-0.31** (Moderate negative): Younger passengers were more likely to travel with siblings or spouses, while older passengers had fewer siblings or spouses.
+
+-   **SibSp and Parch**: **0.38** (Moderate positive): Passengers who had more siblings or spouses aboard tended to also have more parents or children with them.
+
+-   **SibSp and Fare**: **0.14** (Weak positive): Passengers with more siblings or spouses tended to pay slightly higher fares.
+
+-   **SibSp and Embarked**: **0.03** (Very weak positive): There is almost no relationship between the number of siblings/spouses aboard and the embarkation port.
+
+#### **6. Parch and Other Variables:**
+
+-   **Parch and Survived**: **0.10** (Weak positive): Passengers with more parents or children aboard tended to have a slightly higher chance of survival.
+
+-   **Parch and Pclass**: **0.02** (Very weak positive): Very little relationship between the number of parents/children aboard and the class of travel.
+
+-   **Parch and Sex**: **-0.25** (Moderate negative): Males tended to have fewer parents or children aboard compared to females.
+
+-   **Parch and Age**: **-0.19** (Weak negative): Younger passengers tended to have fewer parents or children aboard compared to older passengers.
+
+-   **Parch and SibSp**: **0.38** (Moderate positive): Passengers with more parents or children aboard were more likely to have more siblings or spouses aboard.
+
+-   **Parch and Fare**: **0.21** (Weak positive): Passengers with more parents or children aboard tended to pay slightly higher fares.
+
+-   **Parch and Embarked**: **0.01** (Very weak positive): No significant relationship between the number of parents/children aboard and embarkation port.
+
+#### **7. Fare and Other Variables:**
+
+-   **Fare and Pclass**: **-0.55** (Strong negative): Passengers in higher classes (Pclass 1) paid significantly higher fares than those in lower classes (Pclass 3).
+
+-   **Fare and Sex**: **-0.18** (Moderate negative): Males paid lower fares on average compared to females.
+
+-   **Fare and Age**: **0.09** (Weak positive): Older passengers tended to pay slightly higher fares.
+
+-   **Fare and SibSp**: **0.14** (Weak positive): Passengers with more siblings/spouses aboard tended to pay slightly higher fares.
+
+-   **Fare and Parch**: **0.21** (Weak positive): Passengers with more parents/children aboard tended to pay slightly higher fares.
+
+-   **Fare and Embarked**: **-0.28** (Moderate negative): Passengers embarking from **S** (Southampton) paid lower fares compared to those embarking from **C** (Cherbourg) or **Q** (Queenstown).
+
+#### **8. Embarked and Other Variables:**
+
+-   **Embarked and Pclass**: **0.24** (Positive): Passengers embarking from **C** (Cherbourg) or **Q** (Queenstown) were more likely to be in higher classes (Pclass 1 or 2) compared to passengers from **S** (Southampton).
+
+-   **Embarked and Sex**: **0.11** (Positive): Females were slightly more likely to embark from **C** (Cherbourg) or **Q** (Queenstown) than males.
+
+-   **Embarked and Age**: **-0.03** (Very weak negative): No significant relationship between age and embarkation port.
+
+-   **Embarked and SibSp**: **0.03** (Very weak positive): No significant relationship between the number of siblings/spouses and embarkation port.
+
+-   **Embarked and Parch**: **0.01** (Very weak positive): No significant relationship between the number of parents/children and embarkation port.
+
+**Gender and Survival**: The most significant finding is that **females had a higher likelihood of survival** (strong negative correlation with **Survived**).
+
+**Fare and Embarkation**: The **embarkation port** also showed some correlation with fares, with those embarking from **S (Southampton)** paying lower fares on
+
+**Passenger Class and Fare**: **Lower-class passengers** (Pclass) paid significantly lower fares compared to those in higher classes, and this is strongly reflected in the fare distribution.
+
+## Regression Analysis
+
+<div>
+
+For the purpose of our analysis, we will focus on Fare and Age, as these are the only continuous variables available in the dataset, while the rest are categorical. Initially, we will visualize the relationship between these two variables and perform a detailed analysis. Subsequently, we will expand our approach by incorporating multiple variables into the model, aiming to achieve higher 𝑅\^2 value.
+
+## Fare & Age
+
+</div>
+
+```{r}
+# here we will apply fare limit of (0, 20] to reduce outliers
+df_mod_no_outliers =  df_mod[df_mod$Fare > 0 & df_mod$Fare <= 20, ]
+# 1. Visualize the relationship between Age and Fare in the dataset without outliers
+plot(df_mod_no_outliers$Age, df_mod_no_outliers$Fare, 
+     main = "Scatter plot of Age vs Fare (No Outliers)", 
+     xlab = "Age", 
+     ylab = "Fare", 
+     pch = 19, 
+     col = "blue")
+
+# Fit a linear regression model
+linear_model_no_outliers <- lm(Fare ~ Age, data = df_mod_no_outliers)
+
+# Add regression line to the plot
+abline(linear_model_no_outliers, col = "red")
+
+# 2. Display the summary of the linear regression model
+summary(linear_model_no_outliers)
+
+# 3. Coefficient of Determination (R²)
+r_squared_no_outliers <- summary(linear_model_no_outliers)$r.squared
+cat("R²: ", r_squared_no_outliers, "\n")
+
+```
+
+### Interpretation
+
+`lm()`by default uses Least Squared Method to fit the linear regression model as this method minimizes the error to find the best-fitting line.
+
+-   **Intercept (Estimate: 10.94)**:
+
+    -   When `Age` is 0, the expected value of `Fare` is approximately 10.94. Although, this may not be practically meaningful since `Age` cannot be zero in this dataset.
+
+-   **Age Coefficient (Estimate: -0.02541)**:
+
+    -   For each one-unit increase in `Age`, the `Fare` is expected to decrease by approximately 0.025 units. This indicates a negative relationship between `Age` and `Fare`.
+
+-   **R-squared (0.009)**:
+
+    -   The R-squared value of 0.009 means that only about **0.9%** of the variation in `Fare` is explained by `Age`. This is very low, suggesting that `Age` alone is not a strong predictor of `Fare`.
+
+-   **Residuals**:
+
+    -   The residuals represent the difference between the observed values and the predicted values of `Fare`. The distribution of residuals shows:
+
+        -   **Minimum residual**: -6.415
+
+        -   **1st Quartile (25%)**: -2.480
+
+        -   **Median (50%)**: -1.589
+
+        -   **3rd Quartile (75%)**: 2.712
+
+        -   **Maximum residual**: 9.606
+
+    This range indicates that the model’s predictions are off by up to 9.606 units in either direction.
+
+-   **S.D. of Random Errors (Residual Standard Error)**:
+
+    -   The **residual standard error** (S.E.) is 3.263. This is the standard deviation of the residuals, and it represents the typical size of the error in predicting `Fare` based on `Age`. A lower value indicates a better fit, but here we see that there is room for improvement.
+
+-   **Degrees of Freedom**:
+
+    -   In a simple linear regression model, the **degrees of freedom** (df) for the residuals is the total number of observations minus 2 (one for the intercept and one for the slope). Here, we have 382 degrees of freedom, which means that there are 382 data points used to estimate the model's parameters.
+
+-   **Hypothesis Testing Result:**
+
+    -   The key output here is the t-statistic and the p-value for the `Age` variable.
+
+        -   **Null Hypothesis (H₀)**: βAge=0 (Age has no effect on Fare)
+
+        -   **Alternative Hypothesis (H₁)**: βAge≠0 (Age affects Fare)
+
+        <!-- -->
+
+        -   **p-value for Age (0.0626)**: Since the p-value is greater than the typical significance level of **0.05**, we **fail to reject** the null hypothesis. This means there is not enough evidence to conclude that `Age` significantly affects `Fare` at the 5% significance level. However, the result is still marginally significant at the 10% significance level.
+
+        -   **Conclusion**: Based on this hypothesis test, we conclude that there is insufficient statistical evidence to suggest that `Age` is a significant predictor of `Fare`.
+
+## Multiple variables Regression Analysis
+
+```{r}
+linear_model <- lm(Fare ~ Pclass + Sex + Age + SibSp + Parch + Embarked, data = df_mod)
+
+# Display the summary of the new linear regression model
+summary(linear_model)
+
+# Coefficient of Determination (R²)
+r_squared <- summary(linear_model)$r.squared
+print(paste("R² after removing outliers: ", r_squared))
+```
+
+-   Since R\^2 has a lower value we check for existance of outliers that may be effecting the calculation.
+
+```{r}
+# Visualize Fare distribution using a boxplot
+boxplot(df_mod$Fare, main = "Boxplot of Fare", ylab = "Fare")
+```
+
+<div>
+
+Since we have outliers we will drop them and refit the model.
+
+</div>
+
+```{r}
+
+# Calculate Q1 (25th percentile) and Q3 (75th percentile)
+Q1 <- quantile(df_mod$Fare, 0.25)
+Q3 <- quantile(df_mod$Fare, 0.75)
+
+IQR_value <- Q3 - Q1
+
+lower_bound <- Q1 - 1.5 * IQR_value
+upper_bound <- Q3 + 1.5 * IQR_value
+
+# Remove rows with Fare outside the bounds (outliers)
+df_mod_no_outliers <- df_mod[df_mod$Fare >= lower_bound & df_mod$Fare <= upper_bound, ]
+
+print(paste("Rows before removing outliers: ", nrow(df_mod)))
+print(paste("Rows after removing outliers: ", nrow(df_mod_no_outliers)))
+
+# Fit the linear regression model again after removing outliers
+linear_model_no_outliers <- lm(Fare ~ Pclass + Sex + Age + SibSp + Parch + Embarked, data = df_mod_no_outliers)
+
+# Display the summary of the new linear regression model
+summary(linear_model_no_outliers)
+
+# Coefficient of Determination (R²)
+r_squared_no_outliers <- summary(linear_model_no_outliers)$r.squared
+print(paste("R² after removing outliers: ", r_squared_no_outliers))
+```
+
+#### **Before Outlier Removal**:
+
+-   **Model Fit**: The R\^2 value was 0.39, indicating that the model explained only 39% of the variance in the Fare variable.
+
+-   **Residuals**: Residual standard error was 41.5, suggesting large variations between observed and predicted values, likely due to the influence of outliers.
+
+#### **After Outlier Removal**:
+
+-   **Improved Model Fit**: The R\^2 value increased to 0.637, meaning the model now explains approximately 63.7% of the variance in Fare, a significant improvement.
+
+-   **Reduced Residuals**: The residual standard error dropped to 8.333, reflecting better predictive performance with smaller errors.
+
+### Interpretation
+
+-   The removal of outliers significantly improved the model's performance, as evidenced by the increase in R\^2 and decrease in residual error.
+
+-   The final model explains **63.7% of the variation in Fare**, with the remaining **36.3%** attributable to factors not included in the model or random error.
+
+-   The strongest predictor of Fare is Pclass, with a negative coefficient indicating that higher-class passengers pay significantly more.
+
+-   SibSp and Parch positively influence Fare, showing that families or groups tend to pay higher overall fares.
+
+-   Embarked had a modest negative impact, potentially reflecting differences in fare structures across embarkation points.
+
+#### Hypothesis Testing
+
+-   **Null Hypothesis (H₀)**: βi=0 (The predictor does not have an effect on the outcome)
+
+-   **Alternative Hypothesis (H₁)**: βi≠0 (The predictor has an effect on the outcome)
+
+-   **Pclass:**
+
+    -   **Coefficient**: −12.24817
+
+    -   **t-value**: −24.237
+
+    -   **p-value**: \<2e−16
+
+    **Interpretation**: The p-value is extremely small, which means that `Pclass` is highly statistically significant in predicting `Fare`. We reject the null hypothesis, meaning `Pclass` has a significant effect on `Fare`.
+
+    #### c) **Sex:**
+
+    -   **Coefficient**: 0.34218
+
+    -   **t-value**: 0.450
+
+    -   **p-value**: 0.65284
+
+    **Interpretation**: The p-value for `Sex` is 0.65284, which is greater than the typical significance level of 0.05. Therefore, we **fail to reject** the null hypothesis, meaning `Sex` does not have a statistically significant effect on `Fare` in this model.
+
+    #### d) **Age:**
+
+    -   **Coefficient**: 0.02832
+
+    -   **t-value**: 1.033
+
+    -   **p-value**: 0.3018
+
+    **Interpretation**: The p-value for `Age` is 0.3018, which is greater than 0.05. This means we **fail to reject** the null hypothesis for `Age`, suggesting that `Age` does not have a statistically significant effect on `Fare` in this model.
+
+    #### e) **SibSp:**
+
+    -   **Coefficient**: 5.26747
+
+    -   **t-value**: 12.994
+
+    -   **p-value**: \<2e−16
+
+    **Interpretation**: The p-value for `SibSp` is extremely small, indicating that `SibSp` is highly statistically significant. We reject the null hypothesis and conclude that `SibSp` has a significant effect on `Fare`.
+
+    #### f) **Parch:**
+
+    -   **Coefficient**: 4.55016
+
+    -   **t-value**: 10.062
+
+    -   **p-value**: \<2e−16
+
+    **Interpretation**: The p-value for `Parch` is extremely small, which suggests that `Parch` is statistically significant in predicting `Fare`. We reject the null hypothesis for `Parch`, meaning `Parch` has a significant effect on `Fare`.
+
+    #### g) **Embarked:**
+
+    -   **Coefficient**: −1.56087
+
+    -   **t-value**: −3.208
+
+    -   **p-value**: 0.00141
+
+    -   **Interpretation**: The p-value for `Embarked` is 0.00141, which is less than 0.05. This suggests that `Embarked` is statistically significant in predicting `Fare`. We reject the null hypothesis for `Embarked`, meaning `Embarked` has a significant effect on `Fare`.
+
+# Statistical Inference
+
+## Age
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Randomly sample 100 observations from Age
+sample_age <- sample(df$Age, size = 100, replace = FALSE)
+
+# Estimate the population standard deviation using the entire dataset
+population_sd <- sd(df$Age, na.rm = TRUE)
+
+# Calculate the sample mean
+sample_mean <- mean(sample_age, na.rm = TRUE)
+n <- length(sample_age) # Sample size
+
+margin_of_error = 1.96 * (population_sd / sqrt(n))
+print(paste("Estimated Population Standard Deviation (σ):", round(population_sd, 2)))
+print(paste("Point Estimate (Mean):", round(sample_mean, 2)))
+print(paste("Margin of Error:", round(margin_of_error, 2)))
+
+# Calculate the Z-value for a 90% confidence level
+alpha <- 0.10
+z_value <- qnorm(1 - alpha / 2)
+
+# Calculate the margin of error for CI
+margin_of_error_ci <- z_value * (population_sd / sqrt(n))
+
+# Calculate the confidence interval
+lower_bound <- sample_mean - margin_of_error_ci
+upper_bound <- sample_mean + margin_of_error_ci
+
+print(paste("90% Confidence Interval: (", round(lower_bound, 2), ",", round(upper_bound, 2), ")"))
+
+```
+
+### Interpretation
+
+-   **Point Estimate = 29.99** is the **sample mean** age of the passengers. This is the best estimate of the **true average age** of the entire population based on the sample with margin of error of **2.85 years** means that true population mean could differ from the sample mean by up to **2.85 years** due to sampling variability.
+
+-   The **90% confidence interval** of **(27.6, 32.38)** means that, based on sample, we are **90% confident** that the true average age of all passengers in the population falls between **27.6 years** and **32.38 years**.
+
+## Fare
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+sample_fare <- sample(df$Fare, size = 100, replace = FALSE)
+population_sd <- sd(df$Fare, na.rm = TRUE) 
+
+sample_mean_fare <- mean(sample_fare, na.rm = TRUE)
+n <- length(sample_fare) # Sample size
+
+margin_of_error = 1.96 * (population_sd / sqrt(n))
+print(paste("Estimated Population Standard Deviation (σ):", round(population_sd, 2)))
+print(paste("Point Estimate (Mean):", round(sample_mean_fare, 2)))
+print(paste("Margin of Error:", round(margin_of_error, 2)))
+
+# Calculate the Z-value for a 96% confidence level
+alpha <- 1 - 0.98
+z_value <- qnorm(1 - alpha / 2)
+
+# Calculate the margin of error for CI
+margin_of_error_ci <- z_value * (population_sd / sqrt(n))
+
+# Calculate the confidence interval
+lower_bound <- sample_mean_fare - margin_of_error_ci
+upper_bound <- sample_mean_fare + margin_of_error_ci
+
+print(paste("98% Confidence Interval: (", round(lower_bound, 2), ",", round(upper_bound, 2), ")"))
+
+```
+
+### Interpretation
+
+-   **Point Estimate = 28.8** is the **sample mean** fare that passengers paid. This is the best estimate of the **true average fare** of the entire population based on the sample with margin of error of **\$9.74** means that true population mean could differ from the sample mean by up to **9.74** due to sampling variability.
+
+-   The **98% confidence interval** of **(17.24, 40.36)** means that, based on sample, we are **98% confident** that the true average fare of all passengers in the population falls between \$17.24 - **\$40.36**.

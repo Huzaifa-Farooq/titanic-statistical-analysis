@@ -1,0 +1,348 @@
+## Introduction
+
+This report provides an analysis of the Titanic dataset, focusing on various aspects such as passenger demographics, survival rates, and the impact of different factors on survival.
+
+## Load Required Libraries
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+## Data Preparation
+
+First, we read the Titanic dataset and prepare it for analysis by creating age bins and calculating the number of family members for each passenger.
+
+```{r}
+df <- read.csv("D:\\R-statistics\\titanic.csv")
+
+ages <- df[['Age']]
+age_breaks <- c(0, 13, 19, 25, 36, 51, 66, 100)
+df$age_bin <- cut(df$Age, breaks = age_breaks, right=FALSE)
+df$family_members <- as.numeric(df$Parch + df$SibSp)
+```
+
+## Function to Create Pie Charts
+
+```{r}
+create_pie_chart <- function (freq_table, title){
+  labels <- rownames(freq_table)
+  pie(
+    freq_table, 
+    labels = labels,
+    main = title,
+    col = c("lightblue", "lightgreen", "lightcoral", "lightpink"),
+    radius = 0.8,
+    border = "white",
+    init.angle = 90,
+    cex = 0.8,
+    clockwise = TRUE
+  )
+}
+```
+
+## Passenger Embarked Distribution
+
+```{r}
+# Number of individuals embarking on specific port
+print(table(df$Embarked))
+print(prop.table(table(df$Embarked)))
+create_pie_chart(table(df$Embarked), "Passengers Embarked")
+tbl <- table(df[!is.na(df$Embarked) & df$Embarked != "", ]$Embarked)
+barplot(
+  tbl, 
+  main = "Passengers Embarked by Port", 
+  xlab = "Port of Embarkation", 
+  ylab = "Number of Passengers", 
+  col = c("skyblue", "lightgreen", "salmon"),
+  legend = rownames(tbl),
+  ylim = c(0, 700)
+)
+```
+
+## Passenger Class Distribution
+
+```{r}
+print(table(df$Pclass))
+print(prop.table(table(df$Pclass)))
+create_pie_chart(table(df$Pclass), "Passengers Class")
+barplot(
+  table(df$Pclass), 
+  main = "Passengers Class Distribution", 
+  xlab = "Passenger Class", 
+  ylab = "Number of Passengers", 
+  col = c("skyblue", "lightgreen", "salmon"), 
+  names.arg = c("Class 1", "Class 2", "Class 3"),
+  ylim = c(0, 500)
+)
+```
+
+## Passenger Class Distribution By Gender
+
+```{r}
+gender_class_table <- table(df$Sex, df$Pclass)
+print(gender_class_table)
+barplot(
+  gender_class_table, 
+  main = "Passengers Class Distribution", 
+  xlab = "Passenger Class", 
+  ylab = "Number of Passengers", 
+  col = c("pink", "skyblue"),
+  legend = rownames(gender_class_table),
+  ylim = c(0, 520),
+)
+```
+
+## Passenger Gender Distribution
+
+```{r}
+print(table(df$Sex))
+print(prop.table(table(df$Sex)))
+create_pie_chart(table(df$Sex), "Passengers Gender")
+barplot(
+  table(df$Sex), 
+  main = "Passengers Gender Distribution", 
+  xlab = "Passenger Gender", 
+  ylab = "Number of Passengers", 
+  col = c("skyblue", "lightgreen", "salmon"),
+  legend = rownames(table(df$Sex)),
+  ylim = c(0, 600)
+)
+```
+
+## Survival Distribution
+
+```{r}
+print(table(df$Survived))
+print(prop.table(table(df$Survived)))
+create_pie_chart(table(df$Survived), "Passengers Survival")
+barplot(
+  table(df$Survived), 
+  main = "Passengers Survival Distribution", 
+  xlab = "Survival Status", 
+  ylab = "Number of Passengers", 
+  col = c("lightcoral", "lightgreen"), 
+  names.arg = c("Did Not Survive", "Survived"),
+  ylim = c(0, 600)
+)
+
+# Create a table for survival counts based on gender
+survival_gender_table <- table(df$Sex, df$Survived)
+
+# Create a stacked bar plot
+barplot(
+    survival_gender_table, 
+    main = "Survival Count by Gender", 
+    xlab = "Survival Status", 
+    ylab = "Number of Passengers", 
+    col = c("lightcoral", "lightgreen"),
+    legend = rownames(survival_gender_table),
+    beside = FALSE,   # Make it stacked
+    ylim = c(0, max(survival_gender_table) + 100),
+    names.arg = c("Did Not Survive", "Survived")
+)
+
+```
+
+## Survival Distribution by gender
+
+```{r}
+female_survival_table = table(df[df$Sex == "female",]['Survived'])
+print(female_survival_table)
+# relative freq
+print(prop.table(female_survival_table))
+male_survival_table = table(df[df$Sex == "male",]['Survived'])
+print(male_survival_table)
+# relative freq
+print(prop.table(male_survival_table))
+create_pie_chart(female_survival_table, "Female Survival")
+create_pie_chart(male_survival_table, "Male Survival")
+barplot(
+  female_survival_table, 
+  main = "Female Passengers Survival", 
+  xlab = "Survival Status", 
+  ylab = "Number of Female Passengers", 
+  col = c("lightcoral", "lightgreen"), 
+  names.arg = c("Did Not Survive", "Survived"),
+  ylim = c(0, 300)
+)
+barplot(
+  male_survival_table, 
+  main = "Male Passengers Survival", 
+  xlab = "Survival Status", 
+  ylab = "Number of Male Passengers", 
+  col = c("lightcoral", "lightgreen"), 
+  names.arg = c("Did Not Survive", "Survived"),
+  ylim = c(0, 500)
+)
+
+```
+
+## Age Distribution
+
+We create a histogram to understand the age distribution of passengers.
+
+```{r}
+hist(df$Age, breaks=10, main = "Number of Passengers by Age", xlab = "Age", ylab = "Count", border='black', col = 'lightblue', ylim=c(0, 250))
+
+# Create a frequency table (using age range bins)
+age_bins <- seq(0, 100, by = 10)  # Define age bins
+age_hist <- hist(df$Age, breaks = age_bins, plot = FALSE)
+
+# Calculate cumulative frequency
+cumulative_freq <- cumsum(age_hist$counts)
+
+# Create an ogive plot with straight lines connecting the points
+plot(
+    age_bins[-1], cumulative_freq, 
+    type = "b",
+    col = "blue", 
+    lwd = 2, 
+    xlab = "Age", 
+    ylab = "Cumulative Frequency",
+    main = "Ogive Chart for Age Distribution"
+)
+
+# Add points for better visualization
+points(age_bins[-1], cumulative_freq, col = "blue", pch = 16)
+```
+
+## Age and Gender Distribution
+
+```{r}
+age_gender_table <- table(df$Sex, df$age_bin)
+print(age_gender_table)
+barplot(
+  age_gender_table, 
+  main = "Frequency of Age Ranges by Gender", 
+  xlab = "Age Range", 
+  ylab = "Number of Passengers", 
+  col = c("lightgreen", "skyblue"),
+  legend = rownames(age_gender_table),
+  beside = TRUE,
+  
+)
+```
+
+## Survival Rates Analysis
+
+We calculate survival rates with respect to different factors, such as the number of siblings/spouses aboard, number of parents/children aboard, gender, and age groups.
+
+```{r}
+agg_function <- function(x) {
+  total = length(x)
+  survived = sum(x == 1)
+  not_survived = sum(x == 0)
+  survival_rate = (survived / total) * 100
+  return(c(Total = total, Survived = survived, Not_Survived = not_survived, Survival_Rate = round(survival_rate, 2)))
+}
+
+# Survival rate with respect to siblings/spouses
+print(aggregate(Survived ~ SibSp, data = df, FUN = agg_function))
+```
+
+```{r}
+# Survival rate with respect to parents/children
+print(aggregate(Survived ~ Parch, data = df, FUN = agg_function))
+```
+
+```{r}
+# Survival rate with respect to gender
+print(aggregate(Survived ~ Sex, data = df, FUN = agg_function))
+```
+
+```{r}
+# Survival rate with respect to age bins
+print(aggregate(Survived ~ age_bin, data = df, FUN = agg_function))
+```
+
+## Survival rates by age
+
+```{r}
+survival_by_age_freq = table(df$Survived, df$age_bin)
+print(survival_by_age_freq)
+barplot(
+  survival_by_age_freq, 
+  main = "Survival by Age Range", 
+  xlab = "Age Range", 
+  ylab = "Number of Passengers", 
+  col = c("lightgreen", "lightblue"),
+  legend = rownames(survival_by_age_freq),
+  beside = TRUE
+)
+```
+
+## Survival rates by passenger class
+
+```{r}
+survival_by_pc_freq = table(df$Survived, df$Pclass)
+print(survival_by_pc_freq)
+barplot(
+  survival_by_pc_freq, 
+  main = "Survival by Passenger Class", 
+  xlab = "Passenger Class", 
+  ylab = "Number of Passengers", 
+  col = c("lightgreen", "lightblue"),
+  legend = rownames(survival_by_pc_freq),
+  beside = TRUE
+)
+```
+
+## Survival Rate by Age and Gender
+
+```{r}
+age_gender_survival_rate <- df %>%
+  group_by(age_bin, Sex) %>%
+  summarise(
+    Total_Passengers = n(),
+    Survived = sum(Survived == 1),
+    Survival_Rate = (Survived / Total_Passengers) * 100
+  )
+print(age_gender_survival_rate)
+ggplot(age_gender_survival_rate, aes(x = age_bin, y = Survival_Rate, color = Sex, group = Sex)) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  labs(title = "Survival Rate by Age and Gender",
+       x = "Age Group",
+       y = "Survival Rate (%)",
+       color = "Gender")
+ggplot(age_gender_survival_rate, aes(x = age_bin, y = Survival_Rate, fill = Sex)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Survival Rate by Age Group and Gender",
+    x = "Age Group",
+    y = "Survival Rate (%)"
+  ) +
+  theme_minimal() +
+  scale_fill_manual(values = c("lightcoral", "cornflowerblue"))
+```
+
+## Survival Rate by Number of Family Members
+
+We also analyze how survival rates vary with the number of family members.
+
+```{r}
+survival_rate_wrt_family_members <- df %>%
+  group_by(family_members) %>%
+  summarize(
+    Total_Passengers = n(),
+    Survived = sum(Survived == 1),
+    Survival_Rate = (Survived / Total_Passengers) * 100
+  )
+print(survival_rate_wrt_family_members)
+ggplot(survival_rate_wrt_family_members, aes(x = family_members, y = Survival_Rate)) +
+    geom_bar(stat = "identity", position = "dodge", fill = "skyblue") +  # Set the bar color
+    geom_text(data = subset(survival_rate_wrt_family_members, Survival_Rate == 0),
+              aes(label = "0%"), vjust = -0.5, color = "red") +  # Adding labels for 0% survival rate
+    labs(title = "Survival Rate by Number of Family Members",
+         x = "Number of Family Members",
+         y = "Survival Rate (%)") +
+    scale_x_continuous(breaks = seq(
+        min(survival_rate_wrt_family_members$family_members), 
+        max(survival_rate_wrt_family_members$family_members), 
+        by = 1))
+```
+
+```{r}
+table(df$Survived, df$Sex)
+```

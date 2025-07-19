@@ -1,0 +1,387 @@
+---
+title: "Titanic Dataset Analysis"
+author: "Huzaifa Farooq"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+## Load Necessary Libraries
+
+```{r}
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("moments")  # For skewness and kurtosis
+library(moments)
+```
+
+## Load the Dataset
+
+```{r}
+# Load the dataset
+titanic_data <- read.csv("D:\\R-statistics\\titanic.csv")
+```
+
+## Central Tendency and Dispersion for Age
+
+```{r}
+# Calculate and print central tendency and dispersion for Age
+mean_age <- mean(titanic_data$Age, na.rm = TRUE)
+median_age <- median(titanic_data$Age, na.rm = TRUE)
+mode_age <- as.character(names(which.max(table(titanic_data$Age))))
+variance_age <- var(titanic_data$Age, na.rm = TRUE)
+sd_age <- sd(titanic_data$Age, na.rm = TRUE)
+
+cat("Central Tendency and Dispersion for Age:\n")
+cat("Mean:", mean_age, "\n")
+cat("Median:", median_age, "\n")
+cat("Mode:", mode_age, "\n")
+cat("Variance:", variance_age, "\n")
+cat("Standard Deviation:", sd_age, "\n\n")
+```
+
+### Interpretation
+
+-   The average age of passengers on the Titanic is approximately 29 years.
+
+-   The median age, which indicates the middle value, is 28 years. This means that 50% of passengers were below the age of 28 years and 50% of passengers are over the age of 28 years.
+
+-   The mode represents the most frequent age, which is `24 years`.
+
+-   The variance of the age variable is `211`, showing how much ages vary from the mean.
+
+-   The standard deviation is `14.5 years`, indicating the average distance of each age from the mean.
+
+## Central Tendency and Dispersion for SibSp
+
+```{r}
+# Calculate and print central tendency and dispersion for SibSp
+mean_sibsp <- mean(titanic_data$SibSp, na.rm = TRUE)
+median_sibsp <- median(titanic_data$SibSp, na.rm = TRUE)
+mode_sibsp <- as.character(names(which.max(table(titanic_data$SibSp))))
+variance_sibsp <- var(titanic_data$SibSp, na.rm = TRUE)
+sd_sibsp <- sd(titanic_data$SibSp, na.rm = TRUE)
+
+cat("Central Tendency and Dispersion for SibSp:\n")
+cat("Mean:", mean_sibsp, "\n")
+cat("Median:", median_sibsp, "\n")
+cat("Mode:", mode_sibsp, "\n")
+cat("Variance:", variance_sibsp, "\n")
+cat("Standard Deviation:", sd_sibsp, "\n\n")
+```
+
+### Interpretation
+
+-   The **average number of siblings/spouses** aboard the Titanic is approximately **0.5**. This suggests that most passengers had less than one sibling or spouse on board.
+
+-   The **median number of siblings/spouses** is **0**. This indicates that 50% of passengers had no siblings or spouses traveling with them.
+
+-   The **mode** indicates that the most frequently occurring number of siblings/spouses aboard is **0**, meaning that it was common for passengers to travel alone.
+
+-   The **variance** of the SibSp variable is **1.21**, reflecting a low variability in the number of siblings/spouses among passengers. This suggests that most passengers had a similar number of siblings/spouses aboard.
+
+-   The **standard deviation** is approximately **1.1**. This indicates that the average distance from the mean (0.5) in the number of siblings/spouses is small, highlighting the consistency in this count among passengers.
+
+## Central Tendency and Dispersion for Parch
+
+```{r parch_analysis}
+# Calculate and print central tendency and dispersion for Parch
+mean_parch <- mean(titanic_data$Parch, na.rm = TRUE)
+median_parch <- median(titanic_data$Parch, na.rm = TRUE)
+mode_parch <- as.character(names(which.max(table(titanic_data$Parch))))
+variance_parch <- var(titanic_data$Parch, na.rm = TRUE)
+sd_parch <- sd(titanic_data$Parch, na.rm = TRUE)
+
+cat("Central Tendency and Dispersion for Parch:\n")
+cat("Mean:", mean_parch, "\n")
+cat("Median:", median_parch, "\n")
+cat("Mode:", mode_parch, "\n")
+cat("Variance:", variance_parch, "\n")
+cat("Standard Deviation:", sd_parch, "\n\n")
+```
+
+### Interpretation
+
+-   The **average number of parents/children** aboard the Titanic is approximately **0.3**. This indicates that most passengers traveled without parents or children.
+
+-   The **median number of parents/children** is **0**, signifying that 50% of the passengers had no parents or children traveling with them.
+
+-   The **mode** for the number of parents/children is **0**, meaning that it was common for passengers to travel without any parents or children.
+
+-   The **variance** of the Parch variable is **0.6**, which suggests a low level of variability in the number of parents/children among passengers.
+
+-   The **standard deviation** is approximately **0.8**, indicating that the average distance from the mean (0.3) is small, reinforcing the notion that most passengers had a similar number of parents or children aboard.
+
+## Central Tendency and Dispersion for Fare
+
+```{r fare_analysis}
+# Calculate and print central tendency and dispersion for Fare
+mean_fare <- mean(titanic_data$Fare, na.rm = TRUE)
+median_fare <- median(titanic_data$Fare, na.rm = TRUE)
+mode_fare <- as.character(names(which.max(table(titanic_data$Fare))))
+variance_fare <- var(titanic_data$Fare, na.rm = TRUE)
+sd_fare <- sd(titanic_data$Fare, na.rm = TRUE)
+
+cat("Central Tendency and Dispersion for Fare:\n")
+cat("Mean:", mean_fare, "\n")
+cat("Median:", median_fare, "\n")
+cat("Mode:", mode_fare, "\n")
+cat("Variance:", variance_fare, "\n")
+cat("Standard Deviation:", sd_fare, "\n\n")
+```
+
+### Interpretation
+
+-   The **average fare** paid by passengers on the Titanic is approximately **\$32.20**.
+
+-   The **median fare** is **\$14.45**, indicating that 50% of the passengers paid less than this amount, while the other half paid more.
+
+-   The **mode** of the fares is **\$8.05**, meaning that this fare was the most commonly paid by passengers on board.
+
+-   The **variance** of the fare variable is **251.18**, indicating a substantial amount of variability in the fare prices. This suggests that there were both very low and very high fares among passengers.
+
+-   The **standard deviation** is approximately **\$49.91**, highlighting that the average fare differs from the mean fare by this amount, indicating significant differences in fare prices among passengers.
+
+## Central Tendency for Qualitative Variables
+
+### Mode for Sex
+
+```{r sex_mode}
+# Calculate and print mode for qualitative variable Sex
+mode_sex <- as.character(names(which.max(table(titanic_data$Sex))))
+cat("Central Tendency for Sex:\n")
+cat("Mode:", mode_sex, "\n\n")
+```
+
+### Interpretation
+
+The **mode** for the sex variable indicates that the most frequently occurring gender among passengers is **male**. This suggests that there were more male passengers compared to female passengers on board.
+
+### Mode for Embarked
+
+```{r embarked_mode}
+# Calculate and print mode for qualitative variable Embarked
+mode_embarked <- as.character(names(which.max(table(titanic_data$Embarked))))
+cat("Central Tendency for Embarked:\n")
+cat("Mode:", mode_embarked, "\n")
+```
+
+### Interpretation
+
+The **mode** for the embarked variable indicates that the most frequently occurring embarkation point is **Southampton**. This suggests that a significant number of passengers boarded the Titanic from this port.
+
+### Mode for Passenger Class
+
+```{r}
+mode_pclass <- as.character(names(which.max(table(titanic_data$Pclass))))
+cat("Central Tendency for Passenger Class:\n")
+cat("Mode:", mode_pclass, "\n")
+```
+
+### Interpretation
+
+Most of the passengers had class 3 tickets
+
+### Mode for Survival
+
+```{r}
+mode_survived <- as.character(names(which.max(table(titanic_data$Survived))))
+cat("Central Tendency for Survival:\n")
+cat("Mode:", mode_survived, "\n")
+```
+
+### Interpretation
+
+Most of the passengers didn't survive.
+
+### Quantiles, Percentiles, and Deciles for Age
+
+```{r}
+# Calculate quantiles, percentiles, and deciles for Age
+quantiles_age <- quantile(titanic_data$Age, na.rm = TRUE)
+percentiles_age <- quantile(titanic_data$Age, probs = seq(0, 0.1, 0.01), na.rm = TRUE)
+deciles_age <- quantile(titanic_data$Age, probs = seq(0, 1, 0.1), na.rm = TRUE)
+
+cat("Quantiles for Age: ")
+print(quantiles_age)
+cat("\nDeciles for Age: ")
+print(deciles_age)
+cat("\nPercentiles for Age: ")
+print(percentiles_age)
+```
+
+### Interpretation for Age Quantiles, Percentiles, and Deciles
+
+-   The **quantiles** show the distribution of ages. For instance, the 25th percentile (Q1) is approximately **20 years**, meaning that 25% of passengers are aged 20 years or younger, while the 75th percentile is around **38 years**, indicating that 75% of passengers are aged 38 years or younger.
+-   The **deciles** indicate that the first decile (D1) is around **20 years**, meaning that 10% of passengers are 20 years old or younger. The fifth decile (D5) or median confirms that 50% of passengers are aged 28 years or younger, while the ninth decile (D9) at **40 years** shows that 90% of passengers are aged 40 years or younger.
+-   The **percentiles** further break down the age distribution into finer segments, providing insights into the age demographics across the entire range of passengers. \### Quantiles, Percentiles, and Deciles for Fare
+
+```{r}
+# Calculate quantiles, percentiles, and deciles for Fare
+quantiles_fare <- quantile(titanic_data$Fare, na.rm = TRUE)
+percentiles_fare <- quantile(titanic_data$Fare, probs = seq(0, 1, 0.01), na.rm = TRUE)
+deciles_fare <- quantile(titanic_data$Fare, probs = seq(0, 1, 0.1), na.rm = TRUE)
+
+cat("Quantiles for Fare:\n")
+print(quantiles_fare)
+cat("\nDeciles for Fare:\n")
+print(deciles_fare)
+cat("\nPercentiles for Fare:\n")
+print(percentiles_fare)
+```
+
+### Interpretation for Fare Quantiles, Percentiles, and Deciles
+
+-   The **quantiles** for fare show that the 25th percentile (Q1) is approximately **\$7.9**, indicating that 25% of passengers paid \$7.9 or less, while the 75th percentile (Q3) is around **\$31.00**, suggesting that 75% of passengers paid \$31.00 or less.
+
+-   The **deciles** reveal that the first decile (D1) is around **\$7.55**, indicating that 10% of passengers paid this amount or less, while the fifth decile (D5) (or median) confirms that half of the passengers paid **\$14.45** or less. The ninth decile (D9) at approximately **\$77.95** shows that 90% of passengers paid this amount or less.
+
+-   The **percentiles** provide a detailed breakdown of fare distribution, with the 90th percentile indicating that 90% of passengers paid **\$77.95** or less, highlighting the presence of a few passengers who paid significantly higher fares.
+
+Certainly! Below are the calculations for **skewness** and **kurtosis** for the quantitative variables (`Age`, `Fare`, `SibSp`, and `Parch`), along with their interpretations.
+
+### Skewness and Kurtosis for Age
+
+```{r}
+# Calculate skewness and kurtosis for Age
+skewness_age <- skewness(titanic_data$Age, na.rm = TRUE)
+kurtosis_age <- kurtosis(titanic_data$Age, na.rm = TRUE)
+
+cat("Skewness for Age:", skewness_age, "\n")
+cat("Kurtosis for Age:", kurtosis_age, "\n")
+```
+
+### Interpretation for Age
+
+-   **Skewness for Age**: The skewness of the age distribution is approximately `0.388`. A positive skewness value indicates that the distribution of ages is slightly **right-skewed**, meaning that there are more younger passengers, but a few older passengers pull the tail to the right.
+
+-   **Kurtosis for Age**: The kurtosis of the age distribution is approximately `3.16`. Since this value is close to 3, it indicates that the age distribution is **mesokurtic**, meaning it has a similar peak to a normal distribution, neither too flat nor too peaked.
+
+### Skewness and Kurtosis for Fare
+
+```{r}
+# Calculate skewness and kurtosis for Fare
+skewness_fare <- skewness(titanic_data$Fare, na.rm = TRUE)
+kurtosis_fare <- kurtosis(titanic_data$Fare, na.rm = TRUE)
+
+cat("Skewness for Fare:", skewness_fare, "\n")
+cat("Kurtosis for Fare:", kurtosis_fare, "\n")
+```
+
+### Interpretation for Fare
+
+-   **Skewness for Fare**: The skewness of the fare distribution is approximately `4.79`. This high positive skewness indicates that the **fare distribution is highly right-skewed**, meaning that while most passengers paid lower fares, a few passengers paid very high fares, creating a long tail to the right.
+
+-   **Kurtosis for Fare**: The kurtosis for fare is approximately `36.2`. This high value indicates there are a few extreme outliers (passengers who paid very high fares).
+
+### Skewness and Kurtosis for SibSp
+
+```{r}
+# Calculate skewness and kurtosis for SibSp
+skewness_sibsp <- skewness(titanic_data$SibSp, na.rm = TRUE)
+kurtosis_sibsp <- kurtosis(titanic_data$SibSp, na.rm = TRUE)
+
+cat("Skewness for SibSp:", skewness_sibsp, "\n")
+cat("Kurtosis for SibSp:", kurtosis_sibsp, "\n")
+```
+
+### Interpretation for SibSp
+
+-   **Skewness for SibSp**: The skewness for SibSp is `3.6`, which suggests that the number of siblings/spouses aboard the Titanic is **positively skewed**, with most passengers having few or no siblings/spouses, but a few passengers had multiple.
+
+-   **Kurtosis for SibSp**: The kurtosis for SibSp is approximately `20.77`. This indicates that most passengers have similar numbers of siblings/spouses (often zero), with fewer passengers having much larger numbers of family members aboard.
+
+### Skewness and Kurtosis for Parch
+
+```{r}
+# Calculate skewness and kurtosis for Parch
+skewness_parch <- skewness(titanic_data$Parch, na.rm = TRUE)
+kurtosis_parch <- kurtosis(titanic_data$Parch, na.rm = TRUE)
+
+cat("Skewness for Parch:", skewness_parch, "\n")
+cat("Kurtosis for Parch:", kurtosis_parch, "\n")
+```
+
+### Interpretation for Parch
+
+-   **Skewness for Parch**: The skewness for Parch is `2.75`, which shows that the number of parents/children aboard the Titanic is **highly right-skewed**. Most passengers traveled without parents/children, while a few had multiple.
+
+-   **Kurtosis for Parch**: The kurtosis for Parch is approximately `12.7`. This suggests that the majority of passengers had no parents or children with them, but a small number had many, resulting in extreme outliers.
+
+### Boxplot of Age
+
+```{r}
+boxplot(titanic_data$Age, 
+        main = "Boxplot of Age", 
+        ylab = "Age", 
+        col = "lightblue", 
+        outline = TRUE)
+```
+
+#### Interpretation:
+
+-   **Median**: The median age of passengers is around **28 years**, indicating that half of the passengers were younger than 28 and half were older.
+-   **Whiskers**: The whiskers extend to roughly **1 and 80 years**, suggesting the typical range of ages for passengers.
+-   **Outliers**: There are several **outliers** representing younger children and older individuals. These outliers are marked beyond the whiskers and show the presence of a few very young children (less than 10) and some passengers aged above 60.
+-   **Distribution Shape**: The longer whisker on the upper side suggests a slight **right skew**, indicating that there are more older passengers in the upper range than younger passengers in the lower range.
+
+------------------------------------------------------------------------
+
+### Boxplot of Fare
+
+```{r}
+boxplot(titanic_data$Fare, 
+        main = "Boxplot of Fare", 
+        ylab = "Fare", 
+        col = "lightgreen", 
+        outline = TRUE)
+```
+
+#### Interpretation:
+
+-   **Median**: The median fare is approximately **\$14.5**, meaning half of the passengers paid less than \$14.5, while the other half paid more.
+-   **Whiskers**: The lower whisker extends to about **\$4**, while the upper whisker reaches around **\$65**, showing that most passengers paid fares within this range.
+-   **Outliers**: There are many **outliers**, indicating that some passengers paid significantly higher fares. These outliers reflect first-class passengers who paid very high fares, well above the typical range (above \$100).
+-   **Distribution Shape**: The **right-skewed** distribution is apparent from the many outliers and long upper whisker, reflecting that while most passengers paid lower fares, a few passengers paid extremely high amounts.
+
+------------------------------------------------------------------------
+
+### Boxplot of SibSp (Number of Siblings/Spouses Aboard)
+
+```{r}
+boxplot(titanic_data$SibSp, 
+        main = "Boxplot of SibSp", 
+        ylab = "Number of Siblings/Spouses", 
+        col = "lightpink", 
+        outline = TRUE)
+```
+
+#### Interpretation:
+
+-   **Median**: The median number of siblings or spouses aboard is **0**, indicating that about half of the passengers traveled without a sibling or spouse.
+-   **Whiskers**: The whiskers indicate a range from **0 to 2**, showing that most passengers traveled with either none or a few siblings/spouses.
+-   **Outliers**: There are some **outliers**, representing families who had 4 or more siblings/spouses aboard. These larger families were relatively uncommon.
+-   **Distribution Shape**: The boxplot reveals a **right-skewed** distribution, as indicated by the outliers and the longer whisker on the upper side. This suggests that while most passengers traveled with no or few siblings/spouses, a small number traveled with several.
+
+------------------------------------------------------------------------
+
+## Boxplot for Pclass
+
+```{r}
+boxplot(titanic_data$Pclass, 
+         main = "Boxplot of Pclass", 
+         ylab = "Passenger Class", 
+         col = "lightpink", 
+         outline = TRUE)
+```
+
+### Interpretation
+
+-   **Median**: The median Passenger Class is 3, indicating that half of the passengers belonged to the 3rd class. This suggests that the majority of passengers were traveling in a lower class.
+
+-   **Interquartile Range (IQR)**: The box represents the middle 50% of the data. The IQR ranges between Passenger Classes 2 and 3. This implies that most passengers were concentrated in the 2nd and 3rd classes.
+
+-   **Whiskers**: The whiskers extend down to class 1 (indicating the minimum value) and up to class 3 (indicating the maximum value). This shows that the Passenger Class variable has three discrete values (1st, 2nd, and 3rd class), with no outliers outside this range.
+
+-   **Distribution Shape**: The boxplot is not continuous, and since Passenger Class is a discrete variable with only three levels, the boxplot visually represents this structure. The larger height of the box in the upper range (closer to 3) suggests that a greater proportion of passengers belonged to the 3rd class.
