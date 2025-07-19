@@ -1,9 +1,9 @@
 
-# Survival Analysis of Titanic Passengers"
+# Survival Analysis of Titanic Passengers
 
 ## Description
 
-This project conducts a comprehensive **survival analysis** on the Titanic dataset using R. The objective is to identify how various factors — including age, gender, passenger class, fare, family size, and port of embarkation — influenced the survival probability of passengers aboard the RMS Titanic.
+This project conducts a comprehensive **survival analysis** on the Titanic dataset using R. The objective is to identify how various factors - including age, gender, passenger class, fare, family size, and port of embarkation - influenced the survival probability of passengers aboard the RMS Titanic.
 
 Through detailed **exploratory data analysis (EDA)**, **statistical summarization**, **visualization**, and **regression modeling**, we extract meaningful patterns and provide clear interpretations with each statistical inference.
 
@@ -28,7 +28,7 @@ The analysis includes a wide range of statistical methods:
 - Bar plots  
 - Boxplots  
 - Scatter plots  
-- Correlation matrix (`corrplot`)
+- Correlation matrix
 
 ### Regression and Correlation
 - Simple linear regression (e.g., Fare vs Age)  
@@ -53,7 +53,7 @@ library(corrplot)    # For correlation matrix plotting
 library(moments)     # For skewness and kurtosis
 ```
 
-## 📄 Note on R Markdown Files
+## Note on R Markdown Files
 
 The analysis is written in **R Markdown (`.Rmd`) format**, which allows combining code, results, and narrative in a single document.
 
